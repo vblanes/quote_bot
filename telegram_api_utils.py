@@ -1,6 +1,7 @@
 import json
 import request
 from urllib.parse import quote_plus
+from typing import Tuple
 
 """
 Class with function to interact with the Telegram APIS
@@ -36,15 +37,21 @@ def send_message(message: str, telegram_id: int, reply_markup=None) -> dict:
     May we need other multimedia stuff such as send files, images, forward messages...
     """
 
-def telegram_id(update: dict) -> int:
+def extract_update_info(update: dict) -> Tuple[int, int, str]:
     """
     Obtain the telegram from the sender
     """
-    if 'edited_message' in update and 'text' in update.get('edited_message'):
-        return update.get('edited_message').get('chat').get('id')
+    if 'message' in update and 'text' in update.get('message'):
+        telegram_id: int = update.get('message').get('chat', {}).get('id')
+        message_id: int = update.get('message').get('message_id')
+        content: str = update.get('message').get('text').strip()
 
     elif 'callback_query' in update:
-        return update.get('callback_query').get('from').get('id')
+        telegram_id: int = update.get('callback_query').get('from', {}).get('id')
+        message_id: int = update.get('callback_query').get('message', {}).get('message_id')
+        content: str = update.get('callback_query').get('data')
 
     else:
-        return update.get('message'.get('chat').get('id')
+        return None, None, None
+       
+    return telegram_id, message_id, content

@@ -1,4 +1,4 @@
-from telegram_api_utils import get_bot_updates, get_last_update_id
+from telegram_api_utils import get_bot_updates, get_last_update_id, extract_update_info
 import time
 
 def process_update(update: dict) -> None:
@@ -6,7 +6,10 @@ def process_update(update: dict) -> None:
     Analyze and perform actions depending on the content of each update
     This is the logic core of the aplication!
     """
-    pass
+    telegram_id, _, content = extract_update_info(update)
+    
+
+
 
 def main_loop(bot_url) -> None:
     last_update_id = None
